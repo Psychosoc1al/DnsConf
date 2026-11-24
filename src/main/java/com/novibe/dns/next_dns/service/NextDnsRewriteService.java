@@ -3,6 +3,7 @@ package com.novibe.dns.next_dns.service;
 import com.novibe.common.base_structures.BypassRoute;
 import com.novibe.common.config.EnvironmentVariables;
 import com.novibe.common.service.ExcludeRedirectCheckService;
+import com.novibe.common.service.IncludeRedirectCheckService;
 import com.novibe.common.util.HostsCompressor;
 import com.novibe.common.util.Log;
 import com.novibe.dns.next_dns.http.NextDnsRewriteClient;
@@ -25,6 +26,7 @@ public class NextDnsRewriteService {
 
     private final NextDnsRewriteClient nextDnsRewriteClient;
     private final ExcludeRedirectCheckService excludeRedirectCheckService;
+    private final IncludeRedirectCheckService includeRedirectCheckService;
 
     public Map<String, CreateRewriteDto> buildNewRewrites(List<BypassRoute> overrides) {
         Map<String, CreateRewriteDto> rewriteDtos = new HashMap<>();
@@ -48,7 +50,7 @@ public class NextDnsRewriteService {
         for (RewriteDto existingRewrite : existingRewrites) {
             String domain = existingRewrite.name();
             String oldIp = existingRewrite.content();
-            if (excludeRedirectCheckService.shouldExclude(domain)) {
+            if (excludeRedirectCheckService.shouldExclude(domain) || !includeRedirectCheckService.shouldInclude(domain)) {
                 ignoredIds.add(existingRewrite.id());
                 newRewriteRequests.remove(domain);
                 continue;
@@ -61,13 +63,14 @@ public class NextDnsRewriteService {
             }
         }
         newRewriteRequests.keySet().removeIf(excludeRedirectCheckService::shouldExclude);
+        newRewriteRequests.keySet().removeIf(domain -> !includeRedirectCheckService.shouldInclude(domain));
 
         if (!outdatedIds.isEmpty()) {
             Log.io("Removing %s outdated rewrites from NextDNS".formatted(outdatedIds.size()));
             nextDnsRewriteClient.deleteRewritesByIds(outdatedIds);
         }
         if (!ignoredIds.isEmpty()) {
-            Log.io("Removing %s excluded rewrites from NextDNS".formatted(ignoredIds.size()));
+            Log.io("Removing %s excluded or non-matching rewrites from NextDNS".formatted(ignoredIds.size()));
             nextDnsRewriteClient.deleteRewritesByIds(ignoredIds);
         }
         return List.copyOf(newRewriteRequests.values());

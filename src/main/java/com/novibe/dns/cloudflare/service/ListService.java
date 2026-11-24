@@ -3,6 +3,7 @@ package com.novibe.dns.cloudflare.service;
 import com.novibe.common.base_structures.BypassRoute;
 import com.novibe.common.exception.ProfileSetupException;
 import com.novibe.common.service.ExcludeRedirectCheckService;
+import com.novibe.common.service.IncludeRedirectCheckService;
 import com.novibe.common.util.FunctionWrapper;
 import com.novibe.common.util.Log;
 import com.novibe.dns.cloudflare.http.CloudflareListClient;
@@ -37,6 +38,7 @@ public class ListService {
 
     private final CloudflareListClient cloudflareListClient;
     private final ExcludeRedirectCheckService excludeRedirectCheckService;
+    private final IncludeRedirectCheckService includeRedirectCheckService;
     private final String sessionId;
 
     public List<GatewayListDto> createNewBlockLists(List<String> websitesToBlock) {
@@ -52,6 +54,15 @@ public class ListService {
 
     public void omitExcludedOverrides(List<BypassRoute> routes) {
         routes.removeIf(route -> excludeRedirectCheckService.shouldExclude(route.website()));
+    }
+
+    /**
+     * Removes override routes whose domains do not match the include redirect regex patterns.
+     *
+     * @param routes list of bypass routes to filter
+     */
+    public void filterIncludedOverrides(List<BypassRoute> routes) {
+        routes.removeIf(route -> !includeRedirectCheckService.shouldInclude(route.website()));
     }
 
 

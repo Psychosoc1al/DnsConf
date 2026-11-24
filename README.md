@@ -43,6 +43,8 @@ values here: [Setup credentials](#setup-credentials)
 
 [Set up exclude redirects (optional)](#set-up-exclude-redirects-optional)
 
+[Set up include redirects (optional)](#set-up-include-redirects-optional)
+
 [Set up a DNS donor](#set-up-a-dns-donor)
 
 [Multiple profiles setup](#multiple-profiles-setup)
@@ -148,6 +150,19 @@ These domains and their subdomains:
 
 - will be removed from existing redirect rules;
 - won't be added with new ones.
+
+---
+
+## Set up include redirects (optional)
+
+Put regular expressions into **environment variable** `INCLUDE_REDIRECT` separated by comma, e.g. `.*\.google\.com,.*discord.*`
+
+If provided:
+
+- only matching domains will be kept in existing redirect rules (non-matching ones are removed);
+- only matching domains will be added with new redirect rules.
+
+If not provided, all domains from redirect sources are included.
 
 ---
 

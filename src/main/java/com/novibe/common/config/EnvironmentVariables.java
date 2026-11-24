@@ -19,6 +19,8 @@ public class EnvironmentVariables {
 
     public static final String EXCLUDE_REDIRECT = System.getenv("EXCLUDE_REDIRECT");
 
+    public static final String INCLUDE_REDIRECT = System.getenv("INCLUDE_REDIRECT");
+
     public static final String DONOR_DNS = System.getenv("DONOR_DNS");
 
     public static final boolean COMPRESS = ofNullable(System.getenv("COMPRESS"))

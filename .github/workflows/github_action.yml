@@ -20,6 +20,7 @@ jobs:
       BLOCK: ${{ vars.BLOCK }}
       REDIRECT: ${{ vars.REDIRECT }}
       EXCLUDE_REDIRECT: ${{ vars.EXCLUDE_REDIRECT }}
+      INCLUDE_REDIRECT: ${{ vars.INCLUDE_REDIRECT }}
       DONOR_DNS: ${{ vars.DONOR_DNS }}
       COMPRESS: ${{ vars.COMPRESS }}
 

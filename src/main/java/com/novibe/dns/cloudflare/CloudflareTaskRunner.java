@@ -68,6 +68,7 @@ public class CloudflareTaskRunner extends DnsTaskRunner {
         Log.step("Creating new override lists");
         if (!overrides.isEmpty()) {
             listService.omitExcludedOverrides(overrides);
+            listService.filterIncludedOverrides(overrides);
 
             if (nonNull(dnsProfile.donorDns())) {
                 Log.step("Replace IP of domains via IPs from " + dnsProfile.donorDns());
